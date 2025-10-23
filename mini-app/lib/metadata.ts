@@ -1,3 +1,3 @@
-export const title = "Mini App Factory App";
-export const description = "This app was created by the Mini App Factory!";
+export const title = "Learn2Earn AI – Blockchain Basics";
+export const description = "Learn the fundamentals of blockchain with interactive lessons and quizzes.";
 export const url = process.env.NEXT_PUBLIC_URL;

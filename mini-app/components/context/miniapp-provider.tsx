@@ -8,24 +8,49 @@ export interface MiniAppContext {
   sdk: MiniAppSDK;
   context: Context.MiniAppContext | undefined;
   isInMiniApp: boolean | undefined;
+  unlockedLessons: string[];
+  unlockLesson: (id: string) => void;
+  isLessonUnlocked: (id: string) => boolean;
 }
 const defaultSettings: MiniAppContext = {
   sdk,
   context: undefined,
   isInMiniApp: undefined,
+  unlockedLessons: [],
+  unlockLesson: () => {},
+  isLessonUnlocked: () => false,
 };
 const MiniAppContext = createContext<MiniAppContext>(defaultSettings);
 
 export function MiniAppProvider({ children }: { children: React.ReactNode }) {
   const [context, setContext] = useState<MiniAppContext>(defaultSettings);
+  const [unlockedLessons, setUnlockedLessons] = useState<string[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("unlockedLessons");
+    if (stored) setUnlockedLessons(JSON.parse(stored));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("unlockedLessons", JSON.stringify(unlockedLessons));
+  }, [unlockedLessons]);
+
+  const unlockLesson = (id: string) => {
+    setUnlockedLessons((prev) => {
+      if (!prev.includes(id)) return [...prev, id];
+      return prev;
+    });
+  };
+
+  const isLessonUnlocked = (id: string) => unlockedLessons.includes(id);
 
   useEffect(() => {
     const ready = async () => {
       await Promise.all([
         sdk.context
-          .then((context) =>
+          .then((ctx) =>
             setContext((oldContext) => {
-              return { ...oldContext, context };
+              return { ...oldContext, context: ctx };
             })
           )
           .catch(console.error),
@@ -37,7 +62,6 @@ export function MiniAppProvider({ children }: { children: React.ReactNode }) {
             })
           )
           .catch(console.error),
-        ,
       ]);
 
       await sdk.actions.ready().catch(console.error);
@@ -46,8 +70,15 @@ export function MiniAppProvider({ children }: { children: React.ReactNode }) {
     ready();
   }, []);
 
+  const value: MiniAppContext = {
+    ...context,
+    unlockedLessons,
+    unlockLesson,
+    isLessonUnlocked,
+  };
+
   return (
-    <MiniAppContext.Provider value={context}>
+    <MiniAppContext.Provider value={value}>
       {children}
     </MiniAppContext.Provider>
   );
