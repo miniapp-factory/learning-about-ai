@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { lessons } from "@/data/lessons";
 import { Button } from "@/components/ui/button";
+import { PageProps } from "next";
 
-export default function LessonPage({ params }: { params: { id: string } }) {
+export default function LessonPage({ params }: PageProps<{ id: string }>) {
   const { id } = params;
   const router = useRouter();
   const lesson = lessons.find((l) => l.id === id);

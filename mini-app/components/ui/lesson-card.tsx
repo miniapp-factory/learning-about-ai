@@ -15,7 +15,7 @@ export interface Lesson {
 }
 
 export function LessonCard({ lesson }: { lesson: Lesson }) {
-  const { unlockedLessons, unlockLesson, isLessonUnlocked } = useMiniAppContext();
+  const { isLessonUnlocked } = useMiniAppContext();
   const unlocked = isLessonUnlocked(lesson.id);
   return (
     <Card>
