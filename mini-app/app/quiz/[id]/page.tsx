@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMiniAppContext } from "@/components/context/miniapp-provider";
